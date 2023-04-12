@@ -11,21 +11,25 @@
 
 <body>
 
-<!-- https://youtu.be/1GNsWa_EZdw?t=1999 currently up to here on video -->
+<!-- https://youtu.be/1GNsWa_EZdw?t=3304 currently up to here on video -->
 
 <!-- nav bar gets injected from vue component-->
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-         <div class="container-fluid">
-            <a class="navbar-brand" href="#">My Vue</a>
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+<!-- binding to :class a statement that applies appropriate css depending 
+    on state of variable -->
+    <nav 
+        :class="[`navbar-${theme}`, `bg-${theme}`, 'navbar', 'navbar-expand-lg']"
+        >
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">My Vue</a>
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
             <!-- using for loop below to generate nav menu 
                 whatever is contained in the loop will be repeatedly generated
                 in this case, multiple li elements - putting (page, index) in brackets
                 loops both page and index
-                the :key binding makes a unique identifier for each link
-                in the links array -->
+                the :key binding makes a unique identifier for each page
+                in the pages array -->
 
 
                 <li v-for="(page, index) in pages" class="nav-item" :key="index">
@@ -33,18 +37,27 @@
             <!-- on the title, need to use ` instead of ' when combining strings with
                 a bound attribute (such as link.text)-->
 
+            <!-- also binding a class via :class so that active page is applied to
+                correct anchor tag -->
                     <a 
                         class="nav-link" 
-                        ria-current="page" 
+                        :class="{active: activePage == index}"
+                        aria-current="page" 
                         :href="page.link.url"
                         :title="`This link goes to the ${page.link.text} page.`"
                         @click.prevent="activePage = index"
                     >{{ page.link.text }}</a>
                     <!-- the above @click will set activePage to the relevant index -->
                 </li>
-
-
             </ul>
+
+            <form class="d-flex">
+                <button 
+                    class="btn btn-primary"
+                    @click.prevent="changeTheme()"
+                    >Toggle</button>
+            </form>
+
         </div>
     </nav>
 
@@ -58,10 +71,27 @@
     // Must mount vue app to somewhere in the HTML
 
     Vue.createApp({
+
+        // need to use computed  so that the properties/objects can be evaluated on the fly
+
+        // computed: {
+        //         navbarClasses() {
+        //             return {
+        //                 'navbar-light': !this.useDarkNavbar,  
+        //                 'bg-light': !this.useDarkNavbar, 
+        //                 'navbar-dark': this.useDarkNavbar,
+        //                 'bg-dark': this.useDarkNavbar
+        //             }
+        //         }
+        // },
+
         data() {
             return {
+
                 // keeps track of active page, initialise to page 0
+
                 activePage: 0, 
+                theme: 'light',
                 pages: [
                     {
                         link: {text: 'Home', url: 'index.html'},
@@ -80,6 +110,17 @@
                     },
                 ]
             };
+        },
+        methods: {
+            changeTheme() {
+                let theme = 'light'
+
+                if (this.theme == 'light') {
+                    theme = 'dark';
+                }
+
+                this.theme = theme;
+            }
         }
     }).mount('body');
 </script>
